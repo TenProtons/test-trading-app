@@ -118,7 +118,7 @@ function removePair(symbol: string) {
   }
 
   &__search {
-    @apply w-full p-2 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 outline-none;
+    @apply w-full p-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 outline-none;
   }
 
   &__list {
@@ -131,7 +131,7 @@ function removePair(symbol: string) {
     
     &--selected {
       @apply bg-blue-600 text-white;
-      @apply dark:bg-blue-700;
+      @apply dark:bg-blue-700 dark:text-white;
     }
   }
   
