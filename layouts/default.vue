@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { useHead } from 'nuxt/app';
-import ThemeSwitcher from '../components/ui/ThemeSwitcher.vue';
-useHead({
-  bodyAttrs: {
-    class: 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300'
-  }
-})
+import { useTheme } from '../composables/useTheme';
+
+const { theme, toggleTheme } = useTheme();
 </script>
 
 <template>
   <div class="app-layout">
     <header class="app-layout__header">
       <h1 class="app-layout__title">Селектор Торгових Пар</h1>
-      <ThemeSwitcher />
+      <button @click="toggleTheme" class="theme-switcher">
+        {{ theme === 'dark-mode' ? '☀️' : '🌙' }}
+      </button>
     </header>
     <main class="app-layout__main">
       <slot />
@@ -21,8 +19,12 @@ useHead({
 </template>
 
 <style lang="scss" scoped>
+.theme-switcher {
+  @apply p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-xl;
+}
+
 .app-layout {
-  @apply min-h-screen;
+  @apply min-h-screen bg-gray-100 text-gray-900 transition-colors duration-300;
 
   &__header {
     @apply container mx-auto p-4 flex justify-between items-center;
@@ -34,6 +36,13 @@ useHead({
 
   &__main {
     @apply p-4;
+  }
+}
+
+// Правила для темної теми в Tailwind
+.dark {
+  .app-layout {
+    @apply bg-gray-900 text-gray-100;
   }
 }
 </style>
