@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+// ГЛОБАЛЬНІ СТИЛІ ДЛЯ ТЕМ
+// Застосовуються, коли на <html> є клас .light або .dark
+
+body {
+    // Плавний перехід кольорів
+    @apply transition-colors duration-300;
+}
+
+.light body {
+    @apply bg-gray-100 text-gray-900;
+}
+
+.dark body {
+    @apply bg-gray-900 text-gray-100;
+}
+
+.dark .theme-switcher {
+    @apply bg-gray-700;
+}

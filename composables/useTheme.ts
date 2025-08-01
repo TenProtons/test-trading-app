@@ -1,13 +1,11 @@
 import { ref, onMounted, readonly } from 'vue';
 
-type Theme = 'light-mode' | 'dark-mode';
+type Theme = 'light' | 'dark';
 
-const theme = ref<Theme>('light-mode');
+const theme = ref<Theme>('light'); // Починаємо зі світлої теми за замовчуванням
 
 export function useTheme() {
-
-  const toggleTheme = () => {
-    const newTheme = theme.value === 'dark-mode' ? 'light-mode' : 'dark-mode';
+  const setTheme = (newTheme: Theme) => {
     theme.value = newTheme;
     if (process.client) {
       document.documentElement.className = newTheme;
@@ -15,23 +13,22 @@ export function useTheme() {
     }
   };
 
-  const initTheme = () => {
-    if (process.client) {
-      const savedTheme = localStorage.getItem('theme') as Theme | null;
-      if (savedTheme) {
-        theme.value = savedTheme;
-      } else {
-        theme.value = 'light-mode';
-      }
-      document.documentElement.className = theme.value;
-    }
+  const toggleTheme = () => {
+    setTheme(theme.value === 'dark' ? 'light' : 'dark');
   };
-  
-  // Ми запускаємо ініціалізацію один раз, коли composable використовується вперше
-  onMounted(initTheme);
+
+  onMounted(() => {
+    const savedTheme = localStorage.getItem('theme') as Theme | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else {
+       // Якщо нічого не збережено, встановлюємо світлу тему
+       document.documentElement.className = 'light';
+    }
+  });
 
   return {
-    theme: readonly(theme), // Надаємо доступ тільки для читання ззовні
+    theme: readonly(theme),
     toggleTheme,
   };
 }

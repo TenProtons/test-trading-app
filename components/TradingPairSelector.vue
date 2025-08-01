@@ -99,11 +99,11 @@ function removePair(symbol: string) {
   }
 
   &__tag {
-    @apply bg-blue-600 text-white text-sm font-medium px-2 py-1 rounded flex items-center gap-1;
+    @apply bg-blue-600 text-white text-xs font-medium px-2 py-1 rounded flex items-center gap-1;
   }
 
   &__tag-remove {
-    @apply text-white hover:text-red-300;
+    @apply text-white hover:text-red-300 font-bold;
   }
   
   &__arrow {
@@ -126,10 +126,10 @@ function removePair(symbol: string) {
   }
   
   &__item {
-    @apply flex items-center p-2 cursor-pointer hover:bg-gray-700;
+    @apply flex items-center p-2 cursor-pointer hover:bg-gray-700 text-gray-200;
     
     &--selected {
-      @apply bg-blue-800;
+      @apply bg-blue-800 text-white;
     }
   }
   

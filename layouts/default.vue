@@ -10,7 +10,7 @@ const { theme, toggleTheme } = useTheme();
       <h1 class="app-layout__title">Селектор Торгових Пар</h1>
       
       <button v-if="theme" @click="toggleTheme" class="theme-switcher">
-        {{ theme === 'dark-mode' ? '☀️' : '🌙' }}
+        {{ theme === 'dark' ? '☀️' : '🌙' }}
       </button>
     </header>
     <main class="app-layout__main">
