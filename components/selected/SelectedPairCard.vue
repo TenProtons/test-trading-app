@@ -7,6 +7,11 @@ const props = defineProps<{
   data?: TickerData;
 }>();
 
+const placeholderIcon = computed(() => `https://via.placeholder.com/32/A0AEC0/FFFFFF?text=${props.pair.baseAsset.charAt(0)}`);
+const handleError = (event: Event) => {
+  (event.target as HTMLImageElement).src = placeholderIcon.value;
+};
+
 const priceChangeColor = computed(() => {
   if (!props.data || props.data.priceChangePercent === 0) return 'text-gray-500 dark:text-gray-400';
   return props.data.priceChangePercent > 0 ? 'text-green-500' : 'text-red-500';
@@ -19,19 +24,20 @@ const priceUpDownColor = computed(() => {
   return 'text-gray-900 dark:text-gray-100';
 });
 
-const formattedPrice = computed(() => {
-  return props.data ? props.data.price.toFixed(4) : '...';
-});
-
-const formattedChange = computed(() => {
-  return props.data ? `${props.data.priceChangePercent.toFixed(2)}%` : '...';
-});
+const formattedPrice = computed(() => props.data ? props.data.price.toFixed(4) : '...');
+const formattedChange = computed(() => props.data ? `${props.data.priceChangePercent.toFixed(2)}%` : '...');
 </script>
 
 <template>
   <div class="card bg-white dark:bg-gray-800 border-gray-200 dark:border-transparent">
     <div class="card__header">
-      <IconWrapper :src="pair.iconUrl" :alt="pair.baseAsset" />
+
+      <div
+        class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 inline-flex items-center justify-center bg-gray-300 dark:bg-gray-700">
+        <img :src="pair.iconUrl || placeholderIcon" :alt="pair.baseAsset" class="w-full h-full object-cover"
+          @error="handleError" loading="lazy" />
+      </div>
+
       <span class="card__name text-gray-900 dark:text-white">{{ pair.name }}</span>
     </div>
     <div class="card__body">
@@ -48,19 +54,19 @@ const formattedChange = computed(() => {
   &__header {
     @apply flex items-center mb-3;
   }
-  
+
   &__name {
     @apply ml-3 font-bold text-lg;
   }
-  
+
   &__body {
     @apply flex justify-between items-baseline;
   }
-  
+
   &__price {
     @apply text-2xl font-semibold transition-colors duration-200;
   }
-  
+
   &__change {
     @apply text-base font-medium transition-colors duration-200;
   }
