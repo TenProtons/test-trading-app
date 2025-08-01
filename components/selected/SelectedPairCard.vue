@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import IconWrapper from '../../components/ui/IconWrapper.vue';
-import { TickerData, TradingPair } from '../../types/trading';
+import type { TickerData, TradingPair } from '../../types/trading';
 
 const props = defineProps<{
   pair: TradingPair;

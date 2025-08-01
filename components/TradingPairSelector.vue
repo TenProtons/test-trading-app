@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { TradingPair } from '../types/trading';
-import IconWrapper from '../components/ui/IconWrapper.vue';
+import type { TradingPair } from '../types/trading';
 
 const props = defineProps<{
   allPairs: TradingPair[];

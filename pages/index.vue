@@ -3,8 +3,6 @@ import { defineAsyncComponent, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useTradingStore } from '../stores/tradingStore';
 import { useBinanceWebSocket } from '../composables/useBinanceWebSocket';
-import TradingPairSelector from '../components/TradingPairSelector.vue';
-import SelectedPairCard from '../components/selected/SelectedPairCard.vue';
 
 const CandlestickChart = defineAsyncComponent(() => import('../components/chart/CandlestickChart.vue'));
 

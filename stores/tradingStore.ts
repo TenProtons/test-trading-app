@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, reactive, ref } from 'vue';
-import { TickerData, TradingPair } from '../types/trading';
+import type { TickerData, TradingPair } from '../types/trading';
 import { BINANCE_API_BASE_URL, COIN_ICON_BASE_URL, EXCHANGE_INFO_ENDPOINT } from '../constants/api';
 
 // Допоміжна функція для отримання іконки

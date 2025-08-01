@@ -8,7 +8,8 @@ const { theme, toggleTheme } = useTheme();
   <div class="app-layout">
     <header class="app-layout__header">
       <h1 class="app-layout__title">Селектор Торгових Пар</h1>
-      <button @click="toggleTheme" class="theme-switcher">
+      
+      <button v-if="theme" @click="toggleTheme" class="theme-switcher">
         {{ theme === 'dark-mode' ? '☀️' : '🌙' }}
       </button>
     </header>
@@ -20,12 +21,16 @@ const { theme, toggleTheme } = useTheme();
 
 <style lang="scss" scoped>
 .theme-switcher {
-  @apply p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-xl;
+  @apply p-2 rounded-full bg-gray-200 text-xl;
+}
+
+.dark .theme-switcher {
+  @apply bg-gray-700;
 }
 
 .app-layout {
   @apply min-h-screen bg-gray-100 text-gray-900 transition-colors duration-300;
-
+  
   &__header {
     @apply container mx-auto p-4 flex justify-between items-center;
   }
@@ -39,10 +44,7 @@ const { theme, toggleTheme } = useTheme();
   }
 }
 
-// Правила для темної теми в Tailwind
-.dark {
-  .app-layout {
-    @apply bg-gray-900 text-gray-100;
-  }
+.dark .app-layout {
+  @apply bg-gray-900 text-gray-100;
 }
 </style>

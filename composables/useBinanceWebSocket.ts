@@ -1,4 +1,4 @@
-import { ref, onUnmounted, watch, Ref } from 'vue';
+import { ref, onUnmounted, watch, type Ref } from 'vue';
 import { BINANCE_WS_BASE_URL } from '../constants/api';
 
 type MessageCallback = (data: any) => void;
