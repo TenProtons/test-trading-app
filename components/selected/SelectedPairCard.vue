@@ -24,7 +24,7 @@ const priceUpDownColor = computed(() => {
   return 'text-gray-900 dark:text-gray-100';
 });
 
-const formattedPrice = computed(() => props.data ? props.data.price.toFixed(4) : '...');
+const formattedPrice = computed(() => props.data ? props.data.price.toFixed(8) : '...');
 const formattedChange = computed(() => props.data ? `${props.data.priceChangePercent.toFixed(2)}%` : '...');
 </script>
 

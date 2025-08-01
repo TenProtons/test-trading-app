@@ -6,60 +6,63 @@ type MessageCallback = (data: any) => void;
 export function useBinanceWebSocket(symbols: Ref<string[]>, onMessage: MessageCallback) {
   const ws = ref<WebSocket | null>(null);
   const isConnected = ref<boolean>(false);
-  let connectionAttempt: NodeJS.Timeout | null = null;
 
-  const connect = () => {
-    // Спочатку відключаємо старе з'єднання
+  watch(symbols, (newSymbols) => {
+    // 1. Спочатку "відключаємо" і закриваємо старе з'єднання, якщо воно існує.
     if (ws.value) {
+      ws.value.onopen = null;
+      ws.value.onmessage = null;
+      ws.value.onerror = null;
+      ws.value.onclose = null;
       ws.value.close();
     }
-    
-    // Якщо немає обраних символів, не підключаємось
-    if (!symbols.value || symbols.value.length === 0) {
+
+    // 2. Якщо новий список символів порожній, просто зупиняємось.
+    if (!newSymbols || newSymbols.length === 0) {
       isConnected.value = false;
+      ws.value = null;
       return;
     }
 
-    // ВАЖЛИВО: Binance вимагає символи в нижньому регістрі для потоків
-    const streams = symbols.value.map(s => `${s.toLowerCase()}@ticker`).join('/');
-    const url = `${BINANCE_WS_BASE_URL}/${streams}`;
+    // 3. Створюємо абсолютно нове з'єднання з новим списком потоків.
+    const streams = newSymbols.map(s => `${s.toLowerCase()}@ticker`).join('/');
+    const newWs = new WebSocket(`${BINANCE_WS_BASE_URL}/${streams}`);
 
-    ws.value = new WebSocket(url);
-
-    ws.value.onopen = () => {
-      console.log('WebSocket connected to:', url);
+    newWs.onopen = () => {
+      console.log('WebSocket connected to:', newWs.url);
       isConnected.value = true;
     };
 
-    ws.value.onmessage = (event) => {
+    newWs.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      // Переконуємося, що це дані тікера, а не статус підписки
       if (message.e === '24hrTicker') {
         onMessage(message);
       }
     };
 
-    ws.value.onerror = (error) => {
+    newWs.onerror = (error) => {
       console.error('WebSocket error:', error);
-      isConnected.value = false;
+      // isConnected буде встановлено в false в обробнику onclose, який завжди викликається після onerror.
     };
 
-    ws.value.onclose = () => {
-      console.log('WebSocket disconnected.');
-      isConnected.value = false;
-      ws.value = null;
+    newWs.onclose = () => {
+      // Переконуємось, що це саме наш поточний сокет закрився, а не якийсь старий.
+      if (ws.value === newWs) {
+        console.log('WebSocket disconnected.');
+        isConnected.value = false;
+        ws.value = null; // Очищаємо посилання
+      }
     };
-  };
 
-  // Слідкуємо за зміною символів і перепідключаємось з невеликою затримкою,
-  // щоб уникнути частих перепідключень при швидкому виборі
-  watch(symbols, () => {
-    if (connectionAttempt) clearTimeout(connectionAttempt);
-    connectionAttempt = setTimeout(connect, 300); // Затримка 300мс
-  }, { deep: true, immediate: true });
+    // 4. Зберігаємо посилання на новий сокет.
+    ws.value = newWs;
+
+  }, {
+    deep: true,
+    immediate: true
+  });
 
   onUnmounted(() => {
-    if (connectionAttempt) clearTimeout(connectionAttempt);
     if (ws.value) {
       ws.value.close();
     }
