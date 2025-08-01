@@ -83,15 +83,15 @@ function removePair(symbol: string) {
   @apply relative w-full max-w-lg mx-auto;
 
   &__label {
-    @apply block text-sm font-medium text-gray-400 mb-1;
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1;
   }
 
   &__control {
-    @apply bg-gray-800 border border-gray-600 rounded-md p-2 flex items-center justify-between cursor-pointer min-h-[42px];
+    @apply bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md p-2 flex items-center justify-between cursor-pointer min-h-[42px];
   }
   
   &__placeholder {
-    @apply text-gray-400;
+    @apply text-gray-500 dark:text-gray-400;
   }
 
   &__tags {
@@ -107,18 +107,18 @@ function removePair(symbol: string) {
   }
   
   &__arrow {
-    @apply transition-transform duration-200;
+    @apply transition-transform duration-200 text-gray-500 dark:text-gray-400;
     &--open {
       @apply transform rotate-180;
     }
   }
 
   &__dropdown {
-    @apply absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg;
+    @apply absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg;
   }
 
   &__search {
-    @apply w-full p-2 bg-gray-900 text-white border-b border-gray-600 outline-none;
+    @apply w-full p-2 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 outline-none;
   }
 
   &__list {
@@ -126,10 +126,12 @@ function removePair(symbol: string) {
   }
   
   &__item {
-    @apply flex items-center p-2 cursor-pointer hover:bg-gray-700 text-gray-200;
+    @apply flex items-center p-2 cursor-pointer text-gray-800 dark:text-gray-200;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-700;
     
     &--selected {
-      @apply bg-blue-800 text-white;
+      @apply bg-blue-600 text-white;
+      @apply dark:bg-blue-700;
     }
   }
   
