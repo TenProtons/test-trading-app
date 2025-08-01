@@ -7,7 +7,7 @@ const props = defineProps<{
   data?: TickerData;
 }>();
 
-const placeholderIcon = computed(() => `https://via.placeholder.com/32/A0AEC0/FFFFFF?text=${props.pair.baseAsset.charAt(0)}`);
+const placeholderIcon = computed(() => `https://placehold.co/32/A0AEC0/FFFFFF?text=${props.pair.baseAsset.charAt(0)}`);
 const handleError = (event: Event) => {
   (event.target as HTMLImageElement).src = placeholderIcon.value;
 };

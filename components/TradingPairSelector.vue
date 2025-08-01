@@ -29,7 +29,7 @@ function removePair(symbol: string) {
   emit('update:modelValue', props.modelValue.filter(s => s !== symbol));
 }
 
-const getPlaceholderIcon = (asset: string) => `https://via.placeholder.com/32/A0AEC0/FFFFFF?text=${asset.charAt(0)}`;
+const getPlaceholderIcon = (asset: string) => `https://placehold.co/32/A0AEC0/FFFFFF?text=${asset.charAt(0)}`;
 const handleError = (event: Event, pair: TradingPair) => {
   (event.target as HTMLImageElement).src = getPlaceholderIcon(pair.baseAsset);
 };
