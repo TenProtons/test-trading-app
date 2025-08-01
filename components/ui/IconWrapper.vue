@@ -4,8 +4,7 @@ const props = defineProps<{
   alt: string;
 }>();
 
-// Заглушка, якщо іконка не завантажилась
-const placeholderIcon = `https://via.placeholder.com/32/4A5568/FFFFFF?text=${props.alt.charAt(0)}`;
+const placeholderIcon = `https://via.placeholder.com/32/A0AEC0/FFFFFF?text=${props.alt.charAt(0)}`;
 
 const handleError = (event: Event) => {
   (event.target as HTMLImageElement).src = placeholderIcon;
@@ -13,11 +12,11 @@ const handleError = (event: Event) => {
 </script>
 
 <template>
-  <div class="icon-wrapper bg-gray-200 dark:bg-gray-700">
+  <div class="icon-container">
     <img
       :src="props.src || placeholderIcon"
       :alt="props.alt"
-      class="icon-wrapper__image"
+      class="icon-image"
       @error="handleError"
       loading="lazy"
     />
@@ -25,11 +24,21 @@ const handleError = (event: Event) => {
 </template>
 
 <style lang="scss" scoped>
-.icon-wrapper {
-  @apply w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center;
+.icon-container {
+  @apply w-8 h-8 rounded-full flex-shrink-0;
   
-  &__image {
-    @apply w-full h-full object-cover rounded-full;
-  }
+  @apply bg-gray-300 dark:bg-gray-700;
+
+  @apply overflow-hidden;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-image {
+  @apply w-full h-full;
+
+  @apply object-cover;
 }
 </style>
