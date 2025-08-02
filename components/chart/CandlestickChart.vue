@@ -125,11 +125,6 @@ watch(theme, () => {
     chart.applyOptions(getChartOptions())
   }
 });
-watch(() => props.symbol, (newSymbol) => {
-  if (newSymbol) {
-    initializeChart(newSymbol)
-  }
-});
 </script>
 
 <template>
