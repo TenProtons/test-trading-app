@@ -21,7 +21,7 @@ const priceUpDownColor = computed(() => {
 
 const hasImageError = ref(false);
 const showPlaceholder = computed(() => !props.pair.iconUrl || hasImageError.value);
-const formattedPrice = computed(() => props.data ? props.data.price.toFixed(8) : '...');
+const formattedPrice = computed(() => props.data ? parseFloat(props.data.price.toFixed(8)) : '...');
 const formattedChange = computed(() => props.data ? `${props.data.priceChangePercent.toFixed(2)}%` : '...');
 </script>
 
