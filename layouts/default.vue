@@ -8,10 +8,11 @@ const { theme, toggleTheme } = useTheme();
   <div class="app-layout">
     <header class="app-layout__header">
       <h1 class="app-layout__title">Селектор Торгових Пар</h1>
-      
+
       <button v-if="theme" @click="toggleTheme" class="theme-switcher">
         {{ theme === 'dark' ? '☀️' : '🌙' }}
       </button>
+      
     </header>
     <main class="app-layout__main">
       <slot />
@@ -30,7 +31,7 @@ const { theme, toggleTheme } = useTheme();
 
 .app-layout {
   @apply min-h-screen bg-gray-100 text-gray-900 transition-colors duration-300;
-  
+
   &__header {
     @apply container mx-auto p-4 flex justify-between items-center;
   }

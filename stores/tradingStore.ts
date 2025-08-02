@@ -24,18 +24,18 @@ export const useTradingStore = defineStore('trading', () => {
   const getPairRealtimeData = computed(() => {
     return (symbol: string): TickerData | undefined => realtimeData[symbol];
   });
-  
+
   // ACTIONS
   async function fetchAllPairs() {
     isLoading.value = true;
     try {
       const response = await fetch(`${BINANCE_API_BASE_URL}${EXCHANGE_INFO_ENDPOINT}`);
       if (!response.ok) throw new Error('Failed to fetch exchange info');
-      
+
       const data = await response.json();
-      // Фільтруємо тільки активні пари та популярні ринки (напр., USDT, BUSD, BTC)
-      const popularQuoteAssets = ['USDT', 'BUSD', 'BTC', 'ETH', 'EUR'];
-      
+      // Фільтруємо тільки активні пари та популярні ринки
+      const popularQuoteAssets = ['USDT', 'EUR'];
+
       allPairs.value = data.symbols
         .filter((s: any) => s.status === 'TRADING' && popularQuoteAssets.includes(s.quoteAsset))
         .map((s: any): TradingPair => ({
@@ -60,7 +60,7 @@ export const useTradingStore = defineStore('trading', () => {
   function updateTickerData(data: any) {
     const symbol = data.s;
     const currentPrice = parseFloat(data.c);
-    
+
     const existingData = realtimeData[symbol];
     const lastPrice = existingData ? existingData.price : currentPrice;
 
@@ -75,20 +75,15 @@ export const useTradingStore = defineStore('trading', () => {
   function setActiveChart(symbol: string | null) {
     activeChartSymbol.value = symbol;
   }
-  
-  // LocalStorage Logic
+
   function saveToLocalStorage() {
-    if (process.client) {
-      localStorage.setItem('selectedTradingSymbols', JSON.stringify(selectedSymbols.value));
-    }
+    localStorage.setItem('selectedTradingSymbols', JSON.stringify(selectedSymbols.value));
   }
 
   function loadFromLocalStorage() {
-    if (process.client) {
-      const savedSymbols = localStorage.getItem('selectedTradingSymbols');
-      if (savedSymbols) {
-        selectedSymbols.value = JSON.parse(savedSymbols);
-      }
+    const savedSymbols = localStorage.getItem('selectedTradingSymbols');
+    if (savedSymbols) {
+      selectedSymbols.value = JSON.parse(savedSymbols);
     }
   }
 

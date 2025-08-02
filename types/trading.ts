@@ -1,3 +1,5 @@
+import type { Time } from 'lightweight-charts';
+
 // Інтерфейс для торгової пари, отриманої з REST API
 export interface TradingPair {
   id: string; // e.g., 'BTCUSDT'
@@ -17,9 +19,24 @@ export interface TickerData {
 
 // Інтерфейс для даних свічки (kline) з WebSocket
 export interface KlineData {
-  time: number;
+  time: Time;
   open: number;
   high: number;
   low: number;
   close: number;
 }
+
+export type BinanceKline = [
+  number,   // Kline open time
+  string,   // Open price
+  string,   // High price
+  string,   // Low price
+  string,   // Close price
+  string,   // Volume
+  number,   // Kline close time
+  string,   // Quote asset volume
+  number,   // Number of trades
+  string,   // Taker buy base asset volume
+  string,   // Taker buy quote asset volume
+  string    // Ignore
+]

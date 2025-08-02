@@ -2,15 +2,13 @@ import { ref, onMounted, readonly } from 'vue';
 
 type Theme = 'light' | 'dark';
 
-const theme = ref<Theme>('light'); // Починаємо зі світлої теми за замовчуванням
+const theme = ref<Theme>('light');
 
 export function useTheme() {
   const setTheme = (newTheme: Theme) => {
     theme.value = newTheme;
-    if (process.client) {
-      document.documentElement.className = newTheme;
-      localStorage.setItem('theme', newTheme);
-    }
+    document.documentElement.className = newTheme;
+    localStorage.setItem('theme', newTheme);
   };
 
   const toggleTheme = () => {
@@ -22,8 +20,8 @@ export function useTheme() {
     if (savedTheme) {
       setTheme(savedTheme);
     } else {
-       // Якщо нічого не збережено, встановлюємо світлу тему
-       document.documentElement.className = 'light';
+      // Якщо нічого не збережено, встановлюємо світлу тему
+      document.documentElement.className = 'light';
     }
   });
 

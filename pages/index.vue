@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useTradingStore } from '../stores/tradingStore';
 import { useBinanceWebSocket } from '../composables/useBinanceWebSocket';
 
-const CandlestickChart = defineAsyncComponent(() => import('../components/chart/CandlestickChart.vue'));
+const CandlestickChart = defineAsyncComponent(() => import('~/components/chart/CandlestickChart.vue'));
 
 const store = useTradingStore();
 const {
@@ -33,9 +33,7 @@ function handleModelUpdate(newSymbols: string[]) {
 }
 
 function handleCardClick(symbol: string) {
-    // Тут буде логіка для відображення графіка
-    // Наприклад: store.setActiveChart(symbol);
-    alert(`Графік для ${symbol} ще не реалізовано.`);
+  store.setActiveChart(symbol);
 }
 
 </script>
@@ -43,16 +41,13 @@ function handleCardClick(symbol: string) {
 <template>
   <div class="main-page">
     <div class="main-page__selector-container">
-      <TradingPairSelector 
-        :all-pairs="allPairs" 
-        :model-value="selectedSymbols"
-        @update:model-value="handleModelUpdate"
-      />
+      <TradingPairSelector :all-pairs="allPairs" :model-value="selectedSymbols"
+        @update:model-value="handleModelUpdate" />
       <div v-if="isLoading" class="main-page__loader">
         Завантаження списку пар...
       </div>
       <div class="main-page__ws-status">
-        Статус WebSocket: 
+        Статус WebSocket:
         <span :class="isConnected ? 'text-green-500' : 'text-red-500'">
           {{ isConnected ? 'Підключено' : 'Відключено' }}
         </span>
@@ -60,20 +55,15 @@ function handleCardClick(symbol: string) {
     </div>
 
     <div v-if="selectedPairs.length" class="main-page__grid">
-      <SelectedPairCard
-        v-for="pair in selectedPairs"
-        :key="pair.id"
-        :pair="pair"
-        :data="getPairRealtimeData(pair.id)"
-        @click="handleCardClick(pair.id)"
-      />
+      <SelectedPairCard v-for="pair in selectedPairs" :key="pair.id" :pair="pair" :data="getPairRealtimeData(pair.id)"
+        @click="handleCardClick(pair.id)" />
     </div>
     <div v-else class="main-page__placeholder">
       Обрані пари будуть відображені тут.
     </div>
 
     <div v-if="activeChartSymbol" class="main-page__chart-container">
-      <CandlestickChart :symbol="activeChartSymbol" />
+      <CandlestickChart :key="activeChartSymbol" :symbol="activeChartSymbol" />
     </div>
   </div>
 </template>
@@ -85,11 +75,11 @@ function handleCardClick(symbol: string) {
   &__selector-container {
     @apply mb-8;
   }
-  
+
   &__loader {
     @apply text-center text-gray-400 mt-4;
   }
-  
+
   &__ws-status {
     @apply text-center text-sm text-gray-500 mt-2;
   }

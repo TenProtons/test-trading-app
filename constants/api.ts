@@ -4,3 +4,5 @@ export const EXCHANGE_INFO_ENDPOINT = '/api/v3/exchangeInfo';
 export const BINANCE_WS_BASE_URL = 'wss://stream.binance.com:9443/ws';
 
 export const COIN_ICON_BASE_URL = 'https://raw.githubusercontent.com/atomiclabs/cryptocurrency-icons/master/128/color/';
+
+export const KLINE_DATA_ENDPOINT = '/api/v3/klines';

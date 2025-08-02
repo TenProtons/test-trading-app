@@ -7,11 +7,6 @@ const props = defineProps<{
   data?: TickerData;
 }>();
 
-const placeholderIcon = computed(() => `https://placehold.co/32/A0AEC0/FFFFFF?text=${props.pair.baseAsset.charAt(0)}`);
-const handleError = (event: Event) => {
-  (event.target as HTMLImageElement).src = placeholderIcon.value;
-};
-
 const priceChangeColor = computed(() => {
   if (!props.data || props.data.priceChangePercent === 0) return 'text-gray-500 dark:text-gray-400';
   return props.data.priceChangePercent > 0 ? 'text-green-500' : 'text-red-500';
@@ -24,7 +19,9 @@ const priceUpDownColor = computed(() => {
   return 'text-gray-900 dark:text-gray-100';
 });
 
-const formattedPrice = computed(() => props.data ? props.data.price.toFixed(8) : '...');
+const hasImageError = ref(false);
+const showPlaceholder = computed(() => !props.pair.iconUrl || hasImageError.value);
+const formattedPrice = computed(() => props.data ? parseFloat(props.data.price.toFixed(8)) : '...');
 const formattedChange = computed(() => props.data ? `${props.data.priceChangePercent.toFixed(2)}%` : '...');
 </script>
 
@@ -32,10 +29,11 @@ const formattedChange = computed(() => props.data ? `${props.data.priceChangePer
   <div class="card bg-white dark:bg-gray-800 border-gray-200 dark:border-transparent">
     <div class="card__header">
 
-      <div
-        class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 inline-flex items-center justify-center bg-gray-300 dark:bg-gray-700">
-        <img :src="pair.iconUrl || placeholderIcon" :alt="pair.baseAsset" class="w-full h-full object-cover"
-          @error="handleError" loading="lazy" />
+      <img v-if="!showPlaceholder" :src="pair.iconUrl" :alt="pair.baseAsset" class="card__icon-image"
+        @error="hasImageError = true" loading="lazy" />
+
+      <div v-else class="card__icon-placeholder">
+        {{ pair.baseAsset ? pair.baseAsset.charAt(0).toUpperCase() : '?' }}
       </div>
 
       <span class="card__name text-gray-900 dark:text-white">{{ pair.name }}</span>
@@ -53,6 +51,21 @@ const formattedChange = computed(() => props.data ? `${props.data.priceChangePer
 
   &__header {
     @apply flex items-center mb-3;
+  }
+
+  &__icon-image,
+  &__icon-placeholder {
+    @apply w-8 h-8 rounded-full flex-shrink-0;
+  }
+
+  &__icon-image {
+    @apply object-cover;
+  }
+
+  &__icon-placeholder {
+    @apply inline-flex items-center justify-center;
+    @apply bg-gray-300 dark:bg-gray-700;
+    @apply text-gray-800 dark:text-gray-200 font-bold;
   }
 
   &__name {

@@ -29,9 +29,8 @@ function removePair(symbol: string) {
   emit('update:modelValue', props.modelValue.filter(s => s !== symbol));
 }
 
-const getPlaceholderIcon = (asset: string) => `https://placehold.co/32/A0AEC0/FFFFFF?text=${asset.charAt(0)}`;
-const handleError = (event: Event, pair: TradingPair) => {
-  (event.target as HTMLImageElement).src = getPlaceholderIcon(pair.baseAsset);
+const handleImageError = (event: Event) => {
+  (event.target as HTMLImageElement).style.display = 'none';
 };
 </script>
 
@@ -55,10 +54,11 @@ const handleError = (event: Event, pair: TradingPair) => {
         <li v-for="pair in filteredPairs" :key="pair.id" @click="togglePair(pair.id)" class="selector__item"
           :class="{ 'selector__item--selected': selectedPairsSet.has(pair.id) }">
 
-          <div
-            class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 inline-flex items-center justify-center bg-gray-300 dark:bg-gray-700">
-            <img :src="pair.iconUrl || getPlaceholderIcon(pair.baseAsset)" :alt="pair.baseAsset"
-              class="w-full h-full object-cover" @error="handleError($event, pair)" loading="lazy" />
+          <div class="selector__icon-placeholder">
+            {{ pair.baseAsset ? pair.baseAsset.charAt(0).toUpperCase() : '?' }}
+
+            <img v-if="pair.iconUrl" :src="pair.iconUrl" :alt="pair.baseAsset" class="selector__icon-image"
+              @error="handleImageError" loading="lazy" />
           </div>
 
           <span class="selector__item-name">{{ pair.name }}</span>
@@ -78,6 +78,17 @@ const handleError = (event: Event, pair: TradingPair) => {
 
   &__control {
     @apply bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md p-2 flex items-center justify-between cursor-pointer min-h-[42px];
+  }
+
+  &__icon-placeholder {
+    @apply relative w-8 h-8 rounded-full flex-shrink-0;
+    @apply inline-flex items-center justify-center;
+    @apply bg-gray-300 dark:bg-gray-700;
+    @apply text-gray-800 dark:text-gray-200 font-bold;
+  }
+
+  &__icon-image {
+    @apply absolute top-0 left-0 w-full h-full object-cover rounded-full;
   }
 
   &__placeholder {
