@@ -63,7 +63,7 @@ function handleCardClick(symbol: string) {
     </div>
 
     <div v-if="activeChartSymbol" class="main-page__chart-container">
-      <CandlestickChart :symbol="activeChartSymbol" />
+      <CandlestickChart :key="activeChartSymbol" :symbol="activeChartSymbol" />
     </div>
   </div>
 </template>
