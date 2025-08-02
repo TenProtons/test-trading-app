@@ -1,5 +1,5 @@
-import { ref, onUnmounted, watch, type Ref } from 'vue';
-import { BINANCE_WS_BASE_URL } from '../constants/api';
+import { ref, onUnmounted, watch } from 'vue';
+import { BINANCE_WS_BASE_URL } from '~/constants/api';
 
 type MessageCallback = (data: any) => void;
 
@@ -7,63 +7,66 @@ export function useBinanceWebSocket(symbols: Ref<string[]>, onMessage: MessageCa
   const ws = ref<WebSocket | null>(null);
   const isConnected = ref<boolean>(false);
 
-  const connect = () => {
-    if (!symbols.value.length) {
-      disconnect();
+  watch(symbols, (newSymbols) => {
+    // 1. Спочатку "відключаємо" і закриваємо старе з'єднання, якщо воно існує.
+    if (ws.value) {
+      ws.value.onopen = null;
+      ws.value.onmessage = null;
+      ws.value.onerror = null;
+      ws.value.onclose = null;
+      ws.value.close();
+    }
+
+    // 2. Якщо новий список символів порожній, просто зупиняємось.
+    if (!newSymbols || newSymbols.length === 0) {
+      isConnected.value = false;
+      ws.value = null;
       return;
     }
 
-    // Формуємо список потоків для підписки
-    const streams = symbols.value.map(s => `${s.toLowerCase()}@ticker`).join('/');
-    const url = `${BINANCE_WS_BASE_URL}/${streams}`;
+    // 3. Створюємо абсолютно нове з'єднання з новим списком потоків.
+    const streams = newSymbols.map(s => `${s.toLowerCase()}@ticker`).join('/');
+    const newWs = new WebSocket(`${BINANCE_WS_BASE_URL}/${streams}`);
 
-    // Перепідключаємось, якщо URL змінився
-    if (ws.value && ws.value.url !== url) {
-      disconnect();
-    }
-
-    if (ws.value) return; // Вже підключено
-
-    ws.value = new WebSocket(url);
-
-    ws.value.onopen = () => {
+    newWs.onopen = () => {
+      console.log('WebSocket connected to:', newWs.url);
       isConnected.value = true;
-      console.log('WebSocket connected');
     };
 
-    ws.value.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data && data.e === '24hrTicker') {
-        onMessage(data);
+    newWs.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.e === '24hrTicker') {
+        onMessage(message);
       }
     };
 
-    ws.value.onerror = (error) => {
+    newWs.onerror = (error) => {
       console.error('WebSocket error:', error);
-      isConnected.value = false;
+      // isConnected буде встановлено в false в обробнику onclose, який завжди викликається після onerror.
     };
 
-    ws.value.onclose = () => {
-      isConnected.value = false;
-      ws.value = null;
-      console.log('WebSocket disconnected');
+    newWs.onclose = () => {
+      // Переконуємось, що це саме наш поточний сокет закрився, а не якийсь старий.
+      if (ws.value === newWs) {
+        console.log('WebSocket disconnected.');
+        isConnected.value = false;
+        ws.value = null; // Очищаємо посилання
+      }
     };
-  };
 
-  const disconnect = () => {
+    // 4. Зберігаємо посилання на новий сокет.
+    ws.value = newWs;
+
+  }, {
+    deep: true,
+    immediate: true
+  });
+
+  onUnmounted(() => {
     if (ws.value) {
       ws.value.close();
-      ws.value = null;
     }
-  };
+  });
 
-  // Слідкуємо за зміною обраних пар і перепідключаємось
-  watch(symbols, connect, { deep: true, immediate: true });
-
-  // Гарантуємо закриття з'єднання при знищенні компонента
-  onUnmounted(disconnect);
-
-  return {
-    isConnected,
-  };
+  return { isConnected };
 }

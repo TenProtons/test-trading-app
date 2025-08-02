@@ -2,11 +2,9 @@ import { resolve } from 'path';
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-
-  // Вказуємо Nuxt шлях до кореневої папки
+  
   srcDir: './',
 
-  // Явно вказуємо шлях до папки з файлами стилів
   css: [resolve(__dirname, './assets/scss/main.scss')],
 
   modules: [
@@ -22,8 +20,8 @@ export default defineNuxtConfig({
         './pages/**/*.vue',
         './plugins/**/*.{js,ts}',
         './nuxt.config.{js,ts}',
-        './app.vue'
       ],
+      darkMode: 'class',
       theme: {
         extend: {},
       },
