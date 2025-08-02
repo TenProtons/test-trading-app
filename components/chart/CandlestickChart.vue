@@ -22,7 +22,7 @@ let candleSeries: ISeriesApi<'Candlestick'> | null = null;
 
 async function fetchHistoricalData(symbol: string): Promise<KlineData[]> {
   try {
-    const url = `${BINANCE_API_BASE_URL}${KLINE_DATA_ENDPOINT}?symbol=${symbol}&interval=1m&limit=300`;
+    const url = `${BINANCE_API_BASE_URL}${KLINE_DATA_ENDPOINT}?symbol=${symbol}&interval=1m&limit=1000`;
     const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch historical klines');
     const data: BinanceKline[] = await response.json();

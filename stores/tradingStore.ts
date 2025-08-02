@@ -3,7 +3,6 @@ import { computed, reactive, ref } from 'vue';
 import type { TickerData, TradingPair } from '../types/trading';
 import { BINANCE_API_BASE_URL, COIN_ICON_BASE_URL, EXCHANGE_INFO_ENDPOINT } from '../constants/api';
 
-// Допоміжна функція для отримання іконки
 const getIconUrl = (asset: string) => `${COIN_ICON_BASE_URL}${asset.toLowerCase()}.png`;
 
 export const useTradingStore = defineStore('trading', () => {
@@ -33,7 +32,6 @@ export const useTradingStore = defineStore('trading', () => {
       if (!response.ok) throw new Error('Failed to fetch exchange info');
 
       const data = await response.json();
-      // Фільтруємо тільки активні пари та популярні ринки
       const popularQuoteAssets = ['USDT', 'EUR'];
 
       allPairs.value = data.symbols

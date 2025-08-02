@@ -20,7 +20,6 @@ export function useTheme() {
     if (savedTheme) {
       setTheme(savedTheme);
     } else {
-      // Якщо нічого не збережено, встановлюємо світлу тему
       document.documentElement.className = 'light';
     }
   });

@@ -8,7 +8,6 @@ export function useBinanceWebSocket(symbols: Ref<string[]>, onMessage: MessageCa
   const isConnected = ref<boolean>(false);
 
   watch(symbols, (newSymbols) => {
-    // 1. Спочатку "відключаємо" і закриваємо старе з'єднання, якщо воно існує.
     if (ws.value) {
       ws.value.onopen = null;
       ws.value.onmessage = null;
@@ -17,14 +16,12 @@ export function useBinanceWebSocket(symbols: Ref<string[]>, onMessage: MessageCa
       ws.value.close();
     }
 
-    // 2. Якщо новий список символів порожній, просто зупиняємось.
     if (!newSymbols || newSymbols.length === 0) {
       isConnected.value = false;
       ws.value = null;
       return;
     }
 
-    // 3. Створюємо абсолютно нове з'єднання з новим списком потоків.
     const streams = newSymbols.map(s => `${s.toLowerCase()}@ticker`).join('/');
     const newWs = new WebSocket(`${BINANCE_WS_BASE_URL}/${streams}`);
 
@@ -50,13 +47,11 @@ export function useBinanceWebSocket(symbols: Ref<string[]>, onMessage: MessageCa
       if (ws.value === newWs) {
         console.log('WebSocket disconnected.');
         isConnected.value = false;
-        ws.value = null; // Очищаємо посилання
+        ws.value = null;
       }
     };
 
-    // 4. Зберігаємо посилання на новий сокет.
     ws.value = newWs;
-
   }, {
     deep: true,
     immediate: true

@@ -27,7 +27,6 @@ export function useBinanceKlineSocket(
       const data = JSON.parse(event.data);
       if (data && data.e === 'kline') {
         const kline = data.k;
-        // Перетворюємо дані у наш формат KlineData
         onMessage({
           time: (kline.t / 1000) as UTCTimestamp,
           open: parseFloat(kline.o),
@@ -45,7 +44,6 @@ export function useBinanceKlineSocket(
     ws.value = newWs;
   };
 
-  // Слідкуємо за зміною символу і перепідключаємось
   watch(symbol, connect, { immediate: true });
 
   onUnmounted(() => {
