@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
-import { createChart, type IChartApi, type ISeriesApi } from 'lightweight-charts';
+import * as LightweightCharts from 'lightweight-charts';
+import { CandlestickSeries } from 'lightweight-charts';
 import { useTradingStore } from '~/stores/tradingStore';
 import { useTheme } from '~/composables/useTheme';
 import { useBinanceKlineSocket } from '~/composables/useBinanceKlineSocket';
@@ -17,19 +18,18 @@ const { theme } = useTheme();
 const chartContainer = ref<HTMLDivElement | null>(null);
 const isLoading = ref(true);
 
-let chart: IChartApi | null = null;
-let candleSeries: ISeriesApi<'Candlestick'> | null = null;
+let chart: LightweightCharts.IChartApi | null = null;
+let candleSeries: LightweightCharts.ISeriesApi<'Candlestick'> | null = null;
 
 async function fetchHistoricalData(symbol: string): Promise<KlineData[]> {
   try {
     const url = `${BINANCE_API_BASE_URL}${KLINE_DATA_ENDPOINT}?symbol=${symbol}&interval=1m&limit=300`;
     const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch historical klines');
-
     const data: BinanceKline[] = await response.json();
 
     return data.map(k => ({
-      time: k[0] / 1000, // Переводимо в секунди
+      time: (k[0] / 1000) as LightweightCharts.UTCTimestamp,
       open: parseFloat(k[1]),
       high: parseFloat(k[2]),
       low: parseFloat(k[3]),
@@ -47,17 +47,16 @@ async function initializeChart(symbol: string) {
 
   if (chart) {
     chart.remove();
-    chart = null;
   }
 
-  // Створюємо новий графік
-  chart = createChart(chartContainer.value, getChartOptions());
-  candleSeries = chart.addCandlestickSeries({
+  chart = LightweightCharts.createChart(chartContainer.value, getChartOptions());
+
+  candleSeries = chart.addSeries(CandlestickSeries, {
     upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350',
   });
 
   const historicalData = await fetchHistoricalData(symbol);
-  if (historicalData.length > 0) {
+  if (candleSeries && historicalData.length > 0) {
     candleSeries.setData(historicalData);
   }
 
@@ -78,36 +77,28 @@ const getChartOptions = () => ({
   timeScale: { timeVisible: true, secondsVisible: false },
 });
 
-
-// --- Підключення до WebSocket для оновлень в реальному часі ---
-useBinanceKlineSocket(
-  ref(props.symbol),
-  (klineUpdate) => {
-    if (candleSeries) {
-      candleSeries.update(klineUpdate);
-    }
+useBinanceKlineSocket(ref(props.symbol), (klineUpdate) => {
+  if (candleSeries) {
+    candleSeries.update(klineUpdate);
   }
-);
+});
 
 onMounted(() => {
-  initializeChart(props.symbol);
+  initializeChart(props.symbol)
 });
-
 onUnmounted(() => {
   if (chart) {
-    chart.remove();
+    chart.remove()
   }
 });
-
 watch(theme, () => {
   if (chart) {
-    chart.applyOptions(getChartOptions());
+    chart.applyOptions(getChartOptions())
   }
 });
-
 watch(() => props.symbol, (newSymbol) => {
   if (newSymbol) {
-    initializeChart(newSymbol);
+    initializeChart(newSymbol)
   }
 });
 </script>

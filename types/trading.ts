@@ -1,3 +1,5 @@
+import type { Time } from 'lightweight-charts';
+
 // Інтерфейс для торгової пари, отриманої з REST API
 export interface TradingPair {
   id: string; // e.g., 'BTCUSDT'
@@ -17,7 +19,7 @@ export interface TickerData {
 
 // Інтерфейс для даних свічки (kline) з WebSocket
 export interface KlineData {
-  time: number;
+  time: Time;
   open: number;
   high: number;
   low: number;

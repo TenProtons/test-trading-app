@@ -6,7 +6,6 @@
 // Застосовуються, коли на <html> є клас .light або .dark
 
 body {
-    // Плавний перехід кольорів
     @apply transition-colors duration-300;
 }
 

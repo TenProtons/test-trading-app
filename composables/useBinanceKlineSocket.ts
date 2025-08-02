@@ -1,4 +1,5 @@
 import { ref, onUnmounted, watch } from 'vue';
+import type { UTCTimestamp } from 'lightweight-charts';
 import { BINANCE_WS_BASE_URL } from '~/constants/api';
 import type { KlineData } from '~/types/trading';
 
@@ -28,7 +29,7 @@ export function useBinanceKlineSocket(
         const kline = data.k;
         // Перетворюємо дані у наш формат KlineData
         onMessage({
-          time: kline.t / 1000, // lightweight-charts вимагає секунди
+          time: (kline.t / 1000) as UTCTimestamp,
           open: parseFloat(kline.o),
           high: parseFloat(kline.h),
           low: parseFloat(kline.l),
