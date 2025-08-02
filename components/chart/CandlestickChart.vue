@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
-import * as LightweightCharts from 'lightweight-charts';
-import { CandlestickSeries } from 'lightweight-charts';
+import { createChart, type IChartApi, type ISeriesApi, type UTCTimestamp, CandlestickSeries } from 'lightweight-charts';
 import { useTradingStore } from '~/stores/tradingStore';
 import { useTheme } from '~/composables/useTheme';
 import { useBinanceKlineSocket } from '~/composables/useBinanceKlineSocket';
+import type { BinanceKline, KlineData } from '~/types/trading';
 import { BINANCE_API_BASE_URL, KLINE_DATA_ENDPOINT } from '~/constants/api';
-import type { KlineData, BinanceKline } from '~/types/trading';
 
 const props = defineProps<{
   symbol: string;
@@ -18,8 +17,8 @@ const { theme } = useTheme();
 const chartContainer = ref<HTMLDivElement | null>(null);
 const isLoading = ref(true);
 
-let chart: LightweightCharts.IChartApi | null = null;
-let candleSeries: LightweightCharts.ISeriesApi<'Candlestick'> | null = null;
+let chart: IChartApi | null = null;
+let candleSeries: ISeriesApi<'Candlestick'> | null = null;
 
 async function fetchHistoricalData(symbol: string): Promise<KlineData[]> {
   try {
@@ -29,7 +28,7 @@ async function fetchHistoricalData(symbol: string): Promise<KlineData[]> {
     const data: BinanceKline[] = await response.json();
 
     return data.map(k => ({
-      time: (k[0] / 1000) as LightweightCharts.UTCTimestamp,
+      time: (k[0] / 1000) as UTCTimestamp,
       open: parseFloat(k[1]),
       high: parseFloat(k[2]),
       low: parseFloat(k[3]),
@@ -41,6 +40,23 @@ async function fetchHistoricalData(symbol: string): Promise<KlineData[]> {
   }
 }
 
+function calculatePricePrecision(price: number | undefined): number {
+  if (price === undefined || price === null || price === 0) {
+    return 2; // Повертаємо стандартну точність за замовчуванням
+  }
+  // Перетворюємо ціну в рядок і шукаємо десяткову частину
+  const priceString = price.toString();
+  const decimalPart = priceString.split('.')[1];
+
+  // Якщо десяткової частини немає, точність 2 (напр. для BTC)
+  if (!decimalPart) {
+    return 2;
+  }
+
+  // Інакше, точність - це довжина десяткової частини
+  return decimalPart.length;
+}
+
 async function initializeChart(symbol: string) {
   if (!chartContainer.value) return;
   isLoading.value = true;
@@ -49,10 +65,23 @@ async function initializeChart(symbol: string) {
     chart.remove();
   }
 
-  chart = LightweightCharts.createChart(chartContainer.value, getChartOptions());
+  const currentPairData = store.getPairRealtimeData(symbol);
+  const precision = calculatePricePrecision(currentPairData?.price);
+  const priceFormat = {
+    type: 'price' as const,
+    precision: precision,
+    minMove: 1 / Math.pow(10, precision), // Найменший крок ціни, напр. 0.00000001
+  };
+
+  chart = createChart(chartContainer.value, getChartOptions());
 
   candleSeries = chart.addSeries(CandlestickSeries, {
-    upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350',
+    upColor: '#26a69a',
+    downColor: '#ef5350',
+    borderVisible: false,
+    wickUpColor: '#26a69a',
+    wickDownColor: '#ef5350',
+    priceFormat: priceFormat,
   });
 
   const historicalData = await fetchHistoricalData(symbol);
