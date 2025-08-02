@@ -34,7 +34,7 @@ export const useTradingStore = defineStore('trading', () => {
 
       const data = await response.json();
       // Фільтруємо тільки активні пари та популярні ринки
-      const popularQuoteAssets = ['USDT', 'BUSD', 'BTC', 'ETH', 'EUR'];
+      const popularQuoteAssets = ['USDT', 'EUR'];
 
       allPairs.value = data.symbols
         .filter((s: any) => s.status === 'TRADING' && popularQuoteAssets.includes(s.quoteAsset))
